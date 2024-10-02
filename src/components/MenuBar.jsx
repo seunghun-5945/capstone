@@ -64,6 +64,12 @@ const ButtonArea = styled.div`
 `;
 
 const MenuBar = () => {
+
+  const handleLogin = () => {
+    const scope = 'repo'; // GitHub 저장소에 대한 전체 접근 권한 요청
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_APP_GITHUB_CLIENT_ID}&redirect_uri=http://localhost:5173/callback&scope=${scope}`;
+  };
+
   return (
     <Container>
       <LeftSide>
@@ -83,7 +89,7 @@ const MenuBar = () => {
       </Center>
       <RightSide>
         <ButtonArea>
-          <FaGithub fontSize={50}/>GITHUB
+          <FaGithub  onClick={handleLogin} fontSize={50}/>GITHUB
         </ButtonArea>
         <ButtonArea>
           <FaCodePullRequest fontSize={50}/>PULL

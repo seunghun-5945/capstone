@@ -2,7 +2,7 @@
   "name": "capstone",
   "private": true,
   "version": "0.0.0",
-  "main": "main.cjs", 
+  "main": "main.cjs",
   "scripts": {
     "dev": "concurrently \"vite\" \"yarn electron\"",
     "build": "vite build",
@@ -14,15 +14,16 @@
   "dependencies": {
     "@babel/runtime": "^7.25.6",
     "ace-builds": "^1.36.2",
+    "axios": "^1.7.7",
+    "concurrently": "^7.0.0",
+    "electron": "^32.1.2",
     "react": "^18.3.1",
     "react-ace": "^12.0.0",
     "react-console-emulator": "^5.0.2",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
     "react-router-dom": "^6.26.2",
-    "styled-components": "^6.1.13",
-    "concurrently": "^7.0.0",
-    "electron": "^32.1.2"
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.25.4",
