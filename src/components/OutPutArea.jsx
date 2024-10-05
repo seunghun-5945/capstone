@@ -51,7 +51,7 @@ const TextArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  border: 1px solid gray;
+  border: 1px solid lightgray;
   border-radius: 10px;
   margin-bottom: 2%;
   padding-right: 2%;
@@ -63,6 +63,7 @@ const TextBox = styled.input`
   border: none;
   font-size: 20px;
   outline: none;
+  margin-left: 2%;
 `;
 
 const SendButton = styled.button`
@@ -87,6 +88,7 @@ const OutPutArea = () => {
         <HeaderRight>
           <HiOutlineClipboardCopy 
             fontSize={50}
+            style={{cursor: 'pointer', marginRight:"3%"}}
           />
           <IoCopyOutline 
             fontSize={50}

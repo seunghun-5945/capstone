@@ -1,6 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #374D5A;
+`;
+
+const Frame = styled.div`
+  width: 50%;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid gray;
+  border-radius: 20px;
+  background-color: white;
+`;
+
+const Header = styled.div`
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+`;
+
+const Main = styled.div`
+  width: 100%;
+  height: 80%;
+  border: 1px solid black;
+`;
+
+const RepoSelectArea = styled.div`
+  width: 100%;
+  height: 
+`;
+
+const Footer = styled.div`
+  width: 100%;
+  height: 10%;
+  border: 1px solid black;
+`;
 
 function Dashboard() {
   const [token, setToken] = useState(null);
@@ -124,33 +173,63 @@ function Dashboard() {
   };
 
   return (
-    <div>
-      <h1>GitHub Repository Manager</h1>
-      <button onClick={handleLogout}>로그아웃</button>
-      <h2>레포지토리 선택</h2>
-      <select onChange={(e) => handleRepoSelect(e.target.value)}>
-        <option value="">레포지토리 선택</option>
-        {repos.map(repo => (
-          <option key={repo} value={repo}>{repo}</option>
-        ))}
-      </select>
-      {selectedRepo && (
-        <>
-          <h2>파일 목록</h2>
-          <select onChange={(e) => handleFileSelect(e.target.value)}>
-            <option value="">파일 선택</option>
-            {files.map(file => (
-              <option key={file.path} value={file.path}>{file.name}</option>
+    <Container>
+      <Frame>
+        <Header>
+          <h1>GitHub Repository Manager</h1>
+        </Header>
+        <Main>
+          <button onClick={handleLogout}>로그아웃</button>
+          <h2>레포지토리 선택</h2>
+          <select onChange={(e) => handleRepoSelect(e.target.value)}>
+            <option value="">레포지토리 선택</option>
+            {repos.map(repo => (
+              <option key={repo} value={repo}>{repo}</option>
             ))}
           </select>
-        </>
-      )}
-      {selectedFile && (
-        <>
-          <h2>파일 내용 수정</h2>
+          {selectedRepo && (
+            <>
+              <h2>파일 목록</h2>
+              <select onChange={(e) => handleFileSelect(e.target.value)}>
+                <option value="">파일 선택</option>
+                {files.map(file => (
+                  <option key={file.path} value={file.path}>{file.name}</option>
+                ))}
+              </select>
+            </>
+          )}
+          {selectedFile && (
+            <>
+              <h2>파일 내용 수정</h2>
+              <textarea
+                value={fileContent}
+                onChange={(e) => setFileContent(e.target.value)}
+                rows={10}
+                cols={50}
+              />
+              <br />
+              <input
+                type="text"
+                placeholder="커밋 메시지"
+                value={commitMessage}
+                onChange={(e) => setCommitMessage(e.target.value)}
+              />
+              <br />
+              <button onClick={handleUpdateFile}>변경 사항 커밋</button>
+            </>
+          )}
+          <h2>새 파일 추가</h2>
+          <input
+            type="text"
+            placeholder="파일 이름"
+            value={newFileName}
+            onChange={(e) => setNewFileName(e.target.value)}
+          />
+          <br />
           <textarea
-            value={fileContent}
-            onChange={(e) => setFileContent(e.target.value)}
+            placeholder="파일 내용"
+            value={newFileContent}
+            onChange={(e) => setNewFileContent(e.target.value)}
             rows={10}
             cols={50}
           />
@@ -162,34 +241,11 @@ function Dashboard() {
             onChange={(e) => setCommitMessage(e.target.value)}
           />
           <br />
-          <button onClick={handleUpdateFile}>변경 사항 커밋</button>
-        </>
-      )}
-      <h2>새 파일 추가</h2>
-      <input
-        type="text"
-        placeholder="파일 이름"
-        value={newFileName}
-        onChange={(e) => setNewFileName(e.target.value)}
-      />
-      <br />
-      <textarea
-        placeholder="파일 내용"
-        value={newFileContent}
-        onChange={(e) => setNewFileContent(e.target.value)}
-        rows={10}
-        cols={50}
-      />
-      <br />
-      <input
-        type="text"
-        placeholder="커밋 메시지"
-        value={commitMessage}
-        onChange={(e) => setCommitMessage(e.target.value)}
-      />
-      <br />
-      <button onClick={handleCreateFile}>파일 생성 및 커밋</button>
-    </div>
+          <button onClick={handleCreateFile}>파일 생성 및 커밋</button>
+        </Main>
+        <Footer />
+      </Frame>
+    </Container>
   );
 }
 

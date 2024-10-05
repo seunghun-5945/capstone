@@ -7,6 +7,7 @@ import Terminal from 'react-console-emulator';
 import { PiTrashDuotone } from "react-icons/pi";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoTerminal } from "react-icons/io5";
+import { VscRunAll } from "react-icons/vsc";
 
 const Container = styled.div`
   width: 37.5%;
@@ -85,14 +86,20 @@ const EditorArea = () => {
         <HeaderLeft>
           <span>main.py</span>
           <MdOutlineEdit 
-            style={{border: "", margin: "2% 0 0 2%"}}
+            style={{margin: "2% 0 0 2%"}}
             fontSize={40}/>
         </HeaderLeft>
         <HeaderRight>
+          <VscRunAll
+            fontSize={50}
+            color="green"
+            onClick={toggleTerminal}
+            style={{cursor: 'pointer', marginRight:"3%"}}
+          />
           <IoTerminal 
             fontSize={50}
             onClick={toggleTerminal}
-            style={{cursor: 'pointer'}}
+            style={{cursor: 'pointer', marginRight:"3%"}}
           />
           <PiTrashDuotone 
             fontSize={50}/>
@@ -104,7 +111,6 @@ const EditorArea = () => {
             fontSize={16}
             style={{width: "100%", height: "100%", borderRadius: "0 0 10px 10px"}}
             mode="python"  // 파이썬 모드 활성화
-            theme="monokai"
             enableBasicAutocompletion={true}  // 기본 자동완성 기능 활성화
             enableLiveAutocompletion={true}   // 실시간 자동완성 기능 활성화
             enableSnippets={true}             // 코드 스니펫 기능 활성화
