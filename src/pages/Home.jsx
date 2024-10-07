@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Header from "../components/Header";
 import MenuBar from "../components/MenuBar";
 import Footer from "../components/Footer";
+import DirectoryArea from "../components/DirectoryArea";
 import EditorArea from "../components/EditorArea";
 import OutPutArea from "../components/OutPutArea";
 
@@ -49,7 +50,7 @@ const Home = () => {
       <MenuBar />
       <Frame>
         <Center>
-          <DirectoryTab />
+          <DirectoryArea />
           <EditorArea>
           </EditorArea>
           <OutPutArea />

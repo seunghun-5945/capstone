@@ -1,6 +1,6 @@
-// main.cjs
-const { app, BrowserWindow, Menu, globalShortcut } = require('electron');
+const { app, BrowserWindow, Menu, globalShortcut, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs'); // fs 모듈 추가
 
 let win;
 
@@ -9,13 +9,14 @@ function createWindow() {
     width: 1920,
     height: 1080,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js'), // preload 경로 확인
+      contextIsolation: true, // 보안 강화를 위해 true로 설정
+      enableRemoteModule: false,
+      nodeIntegration: false // nodeIntegration을 false로 설정
     },
   });
 
-  win.loadURL('http://localhost:5173'); // Vite 개발 서버 로드
+  win.loadURL('http://localhost:5173');
 
   const template = [
     {
@@ -55,7 +56,6 @@ function createWindow() {
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 
-  // 단축키 이벤트 등록
   win.webContents.on('before-input-event', (event, input) => {
     if (input.control && input.key === '=') {
       win.webContents.setZoomLevel(win.webContents.getZoomLevel() + 0.5);
@@ -64,10 +64,26 @@ function createWindow() {
   });
 }
 
+// 폴더 선택 및 파일 목록 가져오기
+ipcMain.handle('dialog:openDirectory', async () => {
+  const result = await dialog.showOpenDialog(win, {
+    properties: ['openDirectory']
+  });
+  if (result.canceled) {
+    return []; // 사용자가 선택을 취소한 경우 빈 배열 반환
+  }
+
+  const folderPath = result.filePaths[0]; // 선택한 폴더 경로
+  const files = fs.readdirSync(folderPath); // 해당 폴더의 파일 목록 가져오기
+  console.log(files); // 파일 목록을 콘솔에 출력
+
+  // 모든 파일의 전체 경로 반환
+  return files.map(file => path.join(folderPath, file));
+});
+
 app.whenReady().then(() => {
   createWindow();
 
-  // 글로벌 단축키 등록
   globalShortcut.register('CommandOrControl+=', () => {
     if (win) {
       const currentZoom = win.webContents.getZoomLevel();
@@ -77,7 +93,6 @@ app.whenReady().then(() => {
 });
 
 app.on('will-quit', () => {
-  // 애플리케이션 종료 시 글로벌 단축키 해제
   globalShortcut.unregisterAll();
 });
 

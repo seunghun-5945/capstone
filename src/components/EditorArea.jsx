@@ -1,13 +1,31 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState, useEffect, useRef } from "react";
+import styled, { keyframes } from "styled-components";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/ext-language_tools";  // 자동완성 기능을 위한 확장 도구
-import Terminal from 'react-console-emulator';
+import "ace-builds/src-noconflict/ext-language_tools";
 import { PiTrashDuotone } from "react-icons/pi";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoTerminal } from "react-icons/io5";
 import { VscRunAll } from "react-icons/vsc";
+import Terminal from "./Terminal";
+
+const slideDown = keyframes`
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+`;
+
+const slideUp = keyframes`
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+`;
 
 const Container = styled.div`
   width: 37.5%;
@@ -46,39 +64,40 @@ const Main = styled.div`
   width: 100%;
   height: 85%;
   position: relative;
+  overflow: hidden;
 `;
 
 const EditorWrapper = styled.div`
   width: 100%;
   height: 100%;
+  position: relative;
 `;
 
 const TerminalWrapper = styled.div`
+  width: 100%;
+  height: 30%;
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
-  height: ${props => props.isVisible ? '30%' : '0'};
-  transition: height 0.3s ease-in-out;
-  overflow: hidden;
-  border-radius: 0px 0px 10px 10px;
-  z-index: 1000;
+  right: 0;
+  animation: ${props => props.isOpen ? slideDown : slideUp} 0.3s ease-out forwards;
+  display: ${props => props.isVisible ? 'block' : 'none'};
+  z-index: 10;
 `;
 
 const EditorArea = () => {
-  const [isTerminalVisible, setIsTerminalVisible] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalVisible, setTerminalVisible] = useState(false);
+  const [fileContent, setFileContent] = useState(''); // 파일 내용 상태 추가
 
-  const commands = {
-    echo: {
-      description: 'Echo a passed string.',
-      usage: 'echo <string>',
-      fn: (...args) => args.join(' ')
-    },
-  };
-
-  const toggleTerminal = () => {
-    setIsTerminalVisible(!isTerminalVisible);
-  };
+  useEffect(() => {
+    if (terminalOpen) {
+      setTerminalVisible(true);
+    } else {
+      const timer = setTimeout(() => setTerminalVisible(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [terminalOpen]);
 
   return (
     <Container>
@@ -93,13 +112,12 @@ const EditorArea = () => {
           <VscRunAll
             fontSize={50}
             color="green"
-            onClick={toggleTerminal}
             style={{cursor: 'pointer', marginRight:"3%"}}
           />
           <IoTerminal 
             fontSize={50}
-            onClick={toggleTerminal}
             style={{cursor: 'pointer', marginRight:"3%"}}
+            onClick={() => setTerminalOpen(!terminalOpen)}
           />
           <PiTrashDuotone 
             fontSize={50}/>
@@ -110,21 +128,20 @@ const EditorArea = () => {
           <AceEditor
             fontSize={16}
             style={{width: "100%", height: "100%", borderRadius: "0 0 10px 10px"}}
-            mode="python"  // 파이썬 모드 활성화
-            enableBasicAutocompletion={true}  // 기본 자동완성 기능 활성화
-            enableLiveAutocompletion={true}   // 실시간 자동완성 기능 활성화
-            enableSnippets={true}             // 코드 스니펫 기능 활성화
+            mode="python"
+            enableBasicAutocompletion={true}
+            enableLiveAutocompletion={true}
+            enableSnippets={true}
             editorProps={{ $blockScrolling: true }}
+            value={fileContent} // AceEditor에 파일 내용 설정
+            onChange={(newValue) => setFileContent(newValue)} // 내용 변경 시 상태 업데이트
           />
+          {terminalVisible && 
+            <TerminalWrapper isOpen={terminalOpen} isVisible={terminalVisible}>
+              <Terminal />
+            </TerminalWrapper>
+          }
         </EditorWrapper>
-        <TerminalWrapper isVisible={isTerminalVisible}>
-          <Terminal
-            commands={commands}
-            welcomeMessage={'W:IDE 터미널에 오신것을 환영합니다. 도움말은 help 를 입력하세요'}
-            promptLabel={'user@react-terminal:~$'}
-            style={{width: '100%', height: '100%', borderRadius:"0 0 0 0"}}
-          />
-        </TerminalWrapper>
       </Main>
     </Container>
   );
