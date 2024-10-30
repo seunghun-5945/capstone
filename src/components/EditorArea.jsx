@@ -238,19 +238,24 @@ const EditorArea = () => {
             }}
             onKeyDown={handleKeyDown}
             name="editor"
-            width="100%"
-            height="100%"
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "0 0 10px 10px",
+            }}
             fontSize={16}
             showPrintMargin={false}
             showGutter={true}
             highlightActiveLine={true}
             setOptions={{
-              enableBasicAutocompletion: false,
-              enableLiveAutocompletion: false,
-              enableSnippets: false,
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: true,
+              enableSnippets: true,
               showLineNumbers: true,
               tabSize: 2,
+              useSoftTabs: true,
             }}
+            editorProps={{ $blockScrolling: true }}
           />
           {suggestion && (
             <SuggestionText
@@ -263,19 +268,17 @@ const EditorArea = () => {
             </SuggestionText>
           )}
         </EditorWrapper>
-        {isTerminalVisible && (
-          <TerminalWrapper>
-            <Terminal
-              commands={commands}
-              style={{
-                height: "100%",
-                overflow: "auto",
-                backgroundColor: "black",
-                borderRadius: "0 0 10px 10px",
-              }}
-            />
-          </TerminalWrapper>
-        )}
+        <TerminalWrapper isVisible={isTerminalVisible}>
+          <Terminal
+            commands={commands}
+            style={{
+              height: "100%",
+              overflow: "auto",
+              backgroundColor: "black",
+              borderRadius: "0 0 10px 10px",
+            }}
+          />
+        </TerminalWrapper>
       </Main>
     </Container>
   );
