@@ -85,6 +85,14 @@ const TerminalWrapper = styled.div`
   border-radius: 0 0 10px 10px;
 `;
 
+const getCommonPrefixLength = (str1, str2) => {
+  let i = 0;
+  while (i < str1.length && i < str2.length && str1[i] === str2[i]) {
+    i++;
+  }
+  return i;
+};
+
 const EditorArea = () => {
   const [code, setCode] = useState("");
   const [suggestion, setSuggestion] = useState("");
@@ -123,7 +131,13 @@ const EditorArea = () => {
       const session = editor.getSession();
       const position = editor.getCursorPosition();
 
-      // 가상의 마커 생성
+      // 기존 마커 제거
+      if (session.markerIds) {
+        session.markerIds.forEach((id) => session.removeMarker(id));
+      }
+      session.markerIds = [];
+
+      // 새로운 마커 추가
       const marker = {
         type: "text",
         value: suggestion,
@@ -131,15 +145,24 @@ const EditorArea = () => {
         inFront: true,
       };
 
-      session.addDynamicMarker(marker, true);
+      const markerId = session.addDynamicMarker(marker, true);
+      session.markerIds = [...(session.markerIds || []), markerId];
 
-      // Tab 키 커맨드 추가
+      // Tab 키 이벤트 핸들러 업데이트
       editor.commands.addCommand({
         name: "acceptSuggestion",
         bindKey: { win: "Tab", mac: "Tab" },
         exec: function (editor) {
           if (suggestion) {
-            session.insert(position, suggestion);
+            const pos = editor.getCursorPosition();
+            const currentLine = session.getLine(pos.row);
+            const commonPrefixLength = getCommonPrefixLength(
+              currentLine,
+              suggestion
+            );
+            const uniqueSuggestionPart = suggestion.slice(commonPrefixLength);
+
+            session.insert(pos, uniqueSuggestionPart);
             setSuggestion("");
           }
         },
@@ -161,7 +184,6 @@ const EditorArea = () => {
         const session = editor.getSession();
         const currentLine = session.getLine(position.row);
 
-        console.log("코드 제안 요청 전송");
         socketRef.current.emit("codeChange", {
           code: newCode,
           line: currentLine,
@@ -178,9 +200,23 @@ const EditorArea = () => {
       const editor = editorRef.current.editor;
       const session = editor.getSession();
       const position = editor.getCursorPosition();
+      const currentLine = session.getLine(position.row);
 
-      // 제안된 코드 삽입
-      session.insert(position, suggestion);
+      // 현재 라인과 제안된 코드의 공통 부분 찾기
+      let commonPrefixLength = 0;
+      while (
+        commonPrefixLength < currentLine.length &&
+        commonPrefixLength < suggestion.length &&
+        currentLine[commonPrefixLength] === suggestion[commonPrefixLength]
+      ) {
+        commonPrefixLength++;
+      }
+
+      // 중복되지 않는 부분만 삽입
+      const uniqueSuggestionPart = suggestion.slice(commonPrefixLength);
+
+      // 현재 커서 위치에 중복되지 않는 부분만 삽입
+      session.insert(position, uniqueSuggestionPart);
 
       // 상태 업데이트
       setCode(session.getValue());

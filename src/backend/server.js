@@ -33,15 +33,21 @@ io.on("connection", (socket) => {
           {
             role: "system",
             content:
-              "You are a Python code completion assistant. Provide only the code suggestion without any explanation or markdown formatting.",
+              "당신은 파이썬 코드를 자동 완성하는 도우미입니다. 현재 입력된 코드의 문맥을 파악하여 다음에 올 수 있는 적절한 코드를 제안해주세요. 설명이나 주석 없이 실행 가능한 파이썬 코드만 제시하세요.",
           },
           {
             role: "user",
-            content: `Complete this Python code: ${data}`,
+            content: `전체 코드 컨텍스트:
+${data.code}
+
+현재 입력 중인 라인:
+${data.line}
+
+이 다음에 올 수 있는 적절한 파이썬 코드를 제안해주세요.`,
           },
         ],
-        max_tokens: 50,
-        temperature: 0.7,
+        max_tokens: 100,
+        temperature: 0.3,
       });
 
       const suggestion = completion.choices[0].message.content.trim();
