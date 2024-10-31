@@ -33,24 +33,28 @@ io.on("connection", (socket) => {
           {
             role: "system",
             content:
-              "당신은 파이썬 코드를 자동 완성하는 도우미입니다. 현재 입력된 코드의 문맥을 파악하여 다음에 올 수 있는 적절한 코드를 제안해주세요. 설명이나 주석 없이 실행 가능한 파이썬 코드만 제시하세요.",
+              "파이썬 코드 자동 완성 도우미입니다. 코드 제안 시 다음 규칙을 따르세요:\n1. 실행 가능한 파이썬 코드만 제시\n2. 설명이 필요한 경우 파이썬 주석(#)으로 표시\n3. ```python 같은 마크다운 표시는 제외\n4. 코드와 관련된 설명은 모두 주석으로 처리",
           },
           {
             role: "user",
             content: `전체 코드 컨텍스트:
 ${data.code}
 
-현재 입력 중인 라인:
+현재 라인:
 ${data.line}
 
-이 다음에 올 수 있는 적절한 파이썬 코드를 제안해주세요.`,
+다음 코드를 제안해주세요.`,
           },
         ],
         max_tokens: 100,
         temperature: 0.3,
       });
 
-      const suggestion = completion.choices[0].message.content.trim();
+      let suggestion = completion.choices[0].message.content.trim();
+
+      // ```python 등의 마크다운 표시 제거
+      suggestion = suggestion.replace(/```python\n?|```\n?/g, "");
+
       console.log("제안할 코드:", suggestion);
       socket.emit("codeSuggestion", suggestion);
     } catch (error) {
