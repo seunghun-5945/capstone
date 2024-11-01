@@ -28,12 +28,17 @@ io.on("connection", (socket) => {
       console.log("코드 변경 감지:", data);
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini-2024-07-18",
         messages: [
           {
             role: "system",
             content:
-              "파이썬 코드 자동 완성 도우미입니다. 코드 제안 시 다음 규칙을 따르세요:\n1. 실행 가능한 파이썬 코드만 제시\n2. 설명이 필요한 경우 파이썬 주석(#)으로 표시\n3. ```python 같은 마크다운 표시는 제외\n4. 코드와 관련된 설명은 모두 주석으로 처리",
+              "코드 자동 완성 도우미입니다. 사용자의 코드를 분석하여 적절한 언어로 코드를 제안합니다.\n" +
+              "코드 제안 시 다음 규칙을 따르세요:\n" +
+              "1. 실행 가능한 코드만 제시\n" +
+              "2. 설명이 필요한 경우 해당 언어의 주석 형식으로 표시\n" +
+              "3. 마크다운 표시는 제외\n" +
+              "4. 코드와 관련된 설명은 모두 주석으로 처리",
           },
           {
             role: "user",
@@ -46,7 +51,7 @@ ${data.line}
 다음 코드를 제안해주세요.`,
           },
         ],
-        max_tokens: 100,
+        max_tokens: 150,
         temperature: 0.3,
       });
 
