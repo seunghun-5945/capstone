@@ -8,7 +8,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #374D5A;
+  background: linear-gradient(to right, #374D5A, black);
   padding: 0% 2% 0% 2%;
 `;
 

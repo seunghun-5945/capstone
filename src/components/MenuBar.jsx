@@ -33,7 +33,6 @@ const Center = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border: 2px solid red;
 `;
 
 const RightSide = styled.div`
@@ -44,7 +43,6 @@ const RightSide = styled.div`
   justify-content: flex-end;
   padding-left: 2%;
   padding-right: 2%;
-  border: 2px solid yellow;
 `;
 
 const ButtonArea = styled.div`
@@ -58,6 +56,11 @@ const ButtonArea = styled.div`
 `;
 
 const MenuBar = () => {
+  const dispatch = useDispatch();
+
+  const handleLanguageClick = (language) => {
+    dispatch(setLanguage(language));
+  }
 
   useEffect(() => {
     console.log();
@@ -69,19 +72,19 @@ const MenuBar = () => {
         <LanguageSelection />
       </LeftSide>
       <Center>
-        <ButtonArea>
+        <ButtonArea onClick={() => handleLanguageClick('python')}>
           <FaPython 
             fontSize={50}
           />
           Python
         </ButtonArea>
-        <ButtonArea>
+        <ButtonArea onClick={() => handleLanguageClick('java')}>
           <FaJava
             fontSize={50}
           />
           Java
         </ButtonArea>
-        <ButtonArea>
+        <ButtonArea onClick={() => handleLanguageClick('javascript')}>
           <RiJavascriptFill 
             fontSize={50}
           />
