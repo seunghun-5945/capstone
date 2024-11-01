@@ -300,6 +300,8 @@ const EditorArea = () => {
               width: "100%",
               height: "100%",
               borderRadius: "0 0 10px 10px",
+              whiteSpace: "nowrap",
+              overflowX: "auto",
             }}
             fontSize={16}
             showPrintMargin={false}
@@ -312,8 +314,11 @@ const EditorArea = () => {
               showLineNumbers: true,
               tabSize: 2,
               useSoftTabs: true,
-              copyWithEmptySelection: true, // 선택 영역이 없을 때도 현재 라인 복사 허용
-              enableMultiselect: true, // 다중 선택 허용
+              copyWithEmptySelection: true,
+              enableMultiselect: true,
+              wrap: false,
+              wrapEnabled: false,
+              printMargin: false,
             }}
             commands={[
               {
@@ -358,12 +363,16 @@ const EditorArea = () => {
               useSoftTabs: true,
               copyWithEmptySelection: true,
               enableMultiselect: true,
-              wrap: true,
+              wrap: false,
+              wrapEnabled: false,
+              printMargin: false,
             }}
             editorProps={{
               $blockScrolling: Infinity,
               enableClipboard: true,
               selectionStyle: "text",
+              behavioursEnabled: true,
+              wrapBehavioursEnabled: false,
             }}
           />
           {suggestion && (
