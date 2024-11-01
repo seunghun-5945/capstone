@@ -239,6 +239,26 @@ const EditorArea = () => {
     },
   };
 
+  const handleCopyPaste = (e) => {
+    // 기본 복사/붙여넣기 동작 허용
+    return true;
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text).catch((err) => {
+      console.error("복사 실패:", err);
+    });
+  };
+
+  const handlePaste = async (editor) => {
+    try {
+      const text = await navigator.clipboard.readText();
+      editor.insert(text);
+    } catch (err) {
+      console.error("붙여넣기 실패:", err);
+    }
+  };
+
   return (
     <Container>
       <Header>
@@ -273,6 +293,8 @@ const EditorArea = () => {
               setCursorPosition(selection.cursor);
             }}
             onKeyDown={handleKeyDown}
+            onCopy={handleCopyPaste}
+            onPaste={handleCopyPaste}
             name="editor"
             style={{
               width: "100%",
@@ -290,8 +312,59 @@ const EditorArea = () => {
               showLineNumbers: true,
               tabSize: 2,
               useSoftTabs: true,
+              copyWithEmptySelection: true, // 선택 영역이 없을 때도 현재 라인 복사 허용
+              enableMultiselect: true, // 다중 선택 허용
             }}
-            editorProps={{ $blockScrolling: true }}
+            commands={[
+              {
+                name: "copy",
+                bindKey: { win: "Ctrl-C", mac: "Command-C" },
+                exec: (editor) => {
+                  const selectedText = editor.getSelectedText();
+                  if (selectedText) {
+                    handleCopy(selectedText);
+                  } else {
+                    // 선택된 텍스트가 없으면 현재 라인 복사
+                    const currentLine = editor.session.getLine(
+                      editor.getCursorPosition().row
+                    );
+                    handleCopy(currentLine);
+                  }
+                },
+              },
+              {
+                name: "paste",
+                bindKey: { win: "Ctrl-V", mac: "Command-V" },
+                exec: (editor) => handlePaste(editor),
+              },
+              {
+                name: "cut",
+                bindKey: { win: "Ctrl-X", mac: "Command-X" },
+                exec: (editor) => {
+                  const selectedText = editor.getSelectedText();
+                  if (selectedText) {
+                    handleCopy(selectedText);
+                    editor.remove(editor.getSelectionRange());
+                  }
+                },
+              },
+            ]}
+            setOptions={{
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: true,
+              enableSnippets: true,
+              showLineNumbers: true,
+              tabSize: 2,
+              useSoftTabs: true,
+              copyWithEmptySelection: true,
+              enableMultiselect: true,
+              wrap: true,
+            }}
+            editorProps={{
+              $blockScrolling: Infinity,
+              enableClipboard: true,
+              selectionStyle: "text",
+            }}
           />
           {suggestion && (
             <SuggestionText
